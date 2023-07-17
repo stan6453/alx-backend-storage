@@ -15,20 +15,21 @@ logs stored in MongoDB:
      + path=/status
 """
 
+
 if __name__ == 'main':
   from pymongo import MongoClient
 
 
   client = MongoClient('mongodb://127.0.0.1:27017')
-  school_collection = client.logs.nginx
+  nginx = client.logs.nginx
 
-  doc_num = school_collection.find().count()
-  num_get = school_collection.find({"method": "GET"}).count()
-  num_post = school_collection.find({"method": "POST"}).count()
-  num_put = school_collection.find({"method": "PUT"}).count()
-  num_patch = school_collection.find({"method": "PATCH"}).count()
-  num_delete = school_collection.find({"method": "DELETE"}).count()
-  status_check = school_collection.find({"path": "/status"}).count()
+  doc_num = nginx.find().count()
+  num_get = nginx.find({"method": "GET"}).count()
+  num_post = nginx.find({"method": "POST"}).count()
+  num_put = nginx.find({"method": "PUT"}).count()
+  num_patch = nginx.find({"method": "PATCH"}).count()
+  num_delete = nginx.find({"method": "DELETE"}).count()
+  status_check = nginx.find({"path": "/status"}).count()
 
   print("{} logs".format(doc_num))
   print("Methods:")
