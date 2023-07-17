@@ -2,7 +2,6 @@
 """
 Write a Python script that provides some stats about Nginx
 logs stored in MongoDB:
-
  * Database: logs
  * Collection: nginx
  * Display (same as the example):
@@ -16,26 +15,26 @@ logs stored in MongoDB:
      + path=/status
 """
 
+if __name__ == 'main':
+  from pymongo import MongoClient
 
-from pymongo import MongoClient
 
+  client = MongoClient('mongodb://127.0.0.1:27017')
+  school_collection = client.logs.nginx
 
-client = MongoClient('mongodb://127.0.0.1:27017')
-school_collection = client.logs.nginx
+  doc_num = school_collection.find().count()
+  num_get = school_collection.find({"method": "GET"}).count()
+  num_post = school_collection.find({"method": "POST"}).count()
+  num_put = school_collection.find({"method": "PUT"}).count()
+  num_patch = school_collection.find({"method": "PATCH"}).count()
+  num_delete = school_collection.find({"method": "DELETE"}).count()
+  status_check = school_collection.find({"path": "/status"}).count()
 
-doc_num = school_collection.find().count()
-num_get = school_collection.find({"method": "GET"}).count()
-num_post = school_collection.find({"method": "POST"}).count()
-num_put = school_collection.find({"method": "PUT"}).count()
-num_patch = school_collection.find({"method": "PATCH"}).count()
-num_delete = school_collection.find({"method": "DELETE"}).count()
-status_check = school_collection.find({"path": "/status"}).count()
-
-print("{} logs".format(doc_num))
-print("Methods:")
-print("\tmethod GET: {}".format(num_get))
-print("\tmethod POST: {}".format(num_post))
-print("\tmethod PUT: {}".format(num_put))
-print("\tmethod PATCH: {}".format(num_patch))
-print("\tmethod DELETE: {}".format(num_delete))
-print("{} status check".format(status_check))
+  print("{} logs".format(doc_num))
+  print("Methods:")
+  print("\tmethod GET: {}".format(num_get))
+  print("\tmethod POST: {}".format(num_post))
+  print("\tmethod PUT: {}".format(num_put))
+  print("\tmethod PATCH: {}".format(num_patch))
+  print("\tmethod DELETE: {}".format(num_delete))
+  print("{} status check".format(status_check))
