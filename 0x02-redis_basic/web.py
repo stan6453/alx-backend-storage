@@ -20,15 +20,16 @@ def count_requests(method: Callable) -> Callable:
         count how many time a function is called and persis it in redis
         """
         count_key = "count:" + url
+        cache_key = "cached:" + url
         redis_db.incr(count_key)
 
-        result = method(url)
+        if redis_db.get(cache_key):
+            return redis_db.get(cache_key).decode("utf-8")
 
-        cache_key = "cache:" + url
-        if redis_db.get(cache_key) is None:
-            redis_db.setex(cache_key, 10, result)
-            return result
-        return redis_db.get(cache_key).decode('utf-8')
+        result = method(url)
+        redis_db.setex(cache_key, 10, result)
+        return result
+
     return wrapper
 
 
