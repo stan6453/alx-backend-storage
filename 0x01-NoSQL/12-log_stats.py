@@ -33,6 +33,6 @@ def log_stats(nginx):
     print("{} status check".format(status_check))
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     client = MongoClient('mongodb://127.0.0.1:27017')
     log_stats(client.logs.nginx)
