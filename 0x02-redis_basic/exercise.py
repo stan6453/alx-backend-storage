@@ -3,6 +3,7 @@
 Writing strings to Redis
 """
 import functools
+import re
 import redis
 import uuid
 from typing import Callable, Any, Optional, Union
@@ -42,6 +43,39 @@ def call_history(method: Callable) -> Callable:
 
         return return_value
     return wrapper
+
+
+def replay(method: Callable):
+    """
+    display the history of calls of a particular function.
+    """
+    redis_db = redis.Redis(host='127.0.0.1')
+
+    method_name = method.__qualname__
+
+    print(method_name + " was called " +
+          redis_db.get(method_name).decode("utf-8") + " times:")
+
+    all_keys = redis_db.keys()
+    args = redis_db.lrange(method_name+":inputs", 0, -1)
+    for arg in args:
+        data_key = None
+        str_arg = arg.decode("utf-8")
+        for key in all_keys:
+            key_str = key.decode('utf-8')
+            value = None
+            try:
+                value = redis_db.get(key_str).decode("utf8")
+            except Exception:
+                pass
+            find = re.findall(r'[\d]+', str_arg)
+            if value == str_arg[2:-3]:
+                data_key = key_str
+
+            if len(find) > 0 and str(find[0]) == value:
+                data_key = key_str
+
+        print("{}(*{}) -> {}".format(method_name, str_arg, data_key))
 
 
 class Cache():
@@ -90,3 +124,10 @@ class Cache():
         get an int from redis store
         """
         return self.get(key, fn=lambda d: int(d))
+
+
+cache = Cache()
+cache.store("foo")
+cache.store("bar")
+cache.store(42)
+replay(cache.store)
