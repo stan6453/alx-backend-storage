@@ -7,33 +7,31 @@ import redis
 import functools
 from typing import Callable
 
-redis_db = redis.Redis(host='127.0.0.1')
+r = redis.Redis(host='127.0.0.1')
 
 
-def count_requests(method: Callable) -> Callable:
-    """
-    A decorator function for counting how many times a request is made
-    """
+def url_access_count(method):
+    """decorator for get_page function"""
     @functools.wraps(method)
     def wrapper(url):
-        """
-        count how many time a function is called and persis it in redis
-        """
-        count_key = "count:" + url
-        cache_key = "cached:" + url
-        redis_db.incr(count_key)
+        """wrapper function"""
+        key = "cached:" + url
+        cached_value = r.get(key)
+        if cached_value:
+            return cached_value.decode("utf-8")
 
-        if redis_db.get(cache_key):
-            return redis_db.get(cache_key).decode("utf-8")
+            # Get new content and update cache
+        key_count = "count:" + url
+        html_content = method(url)
 
-        result = method(url)
-        redis_db.setex(cache_key, 10, result)
-        return result
-
+        r.incr(key_count)
+        r.set(key, html_content, ex=10)
+        r.expire(key, 10)
+        return html_content
     return wrapper
 
 
-@count_requests
+@url_access_count
 def get_page(url: str) -> str:
     """
     make a get request and return the value
