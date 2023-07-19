@@ -2,33 +2,24 @@
 """
 Writing strings to Redis
 """
-from functools import wraps
+import functools
 import redis
 import uuid
 from typing import Callable, Any, Optional, Union
 
 
-def count_calls(method: Callable) -> Callable:
+def count_calls(fn: Callable) -> Callable:
     """
-    a system to count how many
-    times methods of the Cache class are called.
-    :param method:
-    :return:
+    A decorator function for counting how many times a fn is called
     """
-    key = method.__qualname__
-
-    @wraps(method)
+    @functools.wraps(fn)
     def wrapper(self, *args, **kwargs):
         """
-        Wrap
-        :param self:
-        :param args:
-        :param kwargs:
-        :return:
+        count how many time a function is called and persis it in redis
         """
+        key = fn.__qualname__
         self._redis.incr(key)
-        return method(self, *args, **kwargs)
-
+        return fn(self, *args, **kwargs)
     return wrapper
 
 
