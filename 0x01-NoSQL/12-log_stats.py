@@ -34,5 +34,5 @@ def log_stats(nginx):
 
 
 if __name__ == "main":
-     client = MongoClient('mongodb://127.0.0.1:27017')
+    client = MongoClient('mongodb://127.0.0.1:27017')
     log_stats(client.logs.nginx)
