@@ -45,7 +45,7 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
-def replay(method: Callable):
+def replay(method: Callable) -> None:
     """
     display the history of calls of a particular function.
     """
@@ -109,10 +109,3 @@ class Cache():
         get an int from redis store
         """
         return self.get(key, fn=lambda d: int(d))
-
-
-cache = Cache()
-cache.store("foo")
-cache.store("bar")
-cache.store(42)
-replay(cache.store)
