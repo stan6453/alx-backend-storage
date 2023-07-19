@@ -15,7 +15,6 @@ logs stored in MongoDB:
      + path=/status
 """
 from pymongo import MongoClient
-client = MongoClient('mongodb://127.0.0.1:27017')
 
 
 def log_stats(nginx):
@@ -35,4 +34,5 @@ def log_stats(nginx):
 
 
 if __name__ == "main":
+     client = MongoClient('mongodb://127.0.0.1:27017')
     log_stats(client.logs.nginx)
