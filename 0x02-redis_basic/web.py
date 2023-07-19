@@ -15,15 +15,19 @@ def count_requests(method: Callable) -> Callable:
     A decorator function for counting how many times a request is made
     """
     @functools.wraps(method)
-    def wrapper(*args, **kwargs):
+    def wrapper(url):
         """
         count how many time a function is called and persis it in redis
         """
-        key = "count:" + args[0]
-        if redis_db.get(key) is None:
-            redis_db.setex(key, 10, 1)
-        redis_db.incr(key)
-        return method(*args, **kwargs)
+        count_key = "count:" + url
+        redis_db.incr(count_key)
+
+        result = method(url)
+
+        cache_key = "cache:" + url
+        if redis_db.get(cache_key) is None:
+            redis_db.setex(cache_key, 10, result)
+        return result
     return wrapper
 
 
