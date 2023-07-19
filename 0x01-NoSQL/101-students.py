@@ -10,16 +10,13 @@ Write a Python function that returns all students sorted by average score:
 
 def top_students(mongo_collection):
     """returns all students sorted by average score:"""
-    students = mongo_collection.find()
-
-    # Calculate average scores for each student
-    for student in students:
-        topics = student.get('topics')
-        total_score = sum(topic.get('score') for topic in topics)
-        average_score = total_score / len(topics)
-        student['averageScore'] = average_score
-
-    # Sort students by average score in descending order
-    sorted_students = sorted(students, key=lambda s: s['averageScore'], reverse=True)
-
-    return sorted_students
+    return mongo_collection.aggregate([
+        {
+            "$project": {
+                "name": "$name",
+                "averageScore": {"$avg": "$topics.score"}
+            }},
+        {
+            "$sort": {"averageScore": -1}
+        }
+    ])
