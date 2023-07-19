@@ -14,9 +14,7 @@ logs stored in MongoDB:
      + method=GET
      + path=/status
 """
-
 from pymongo import MongoClient
-
 client = MongoClient('mongodb://127.0.0.1:27017')
 
 
@@ -25,23 +23,17 @@ def log_stats(nginx):
     function that provides some stats about Nginx
     logs stored in MongoDB:
     """
+    method = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     doc_num = nginx.count_documents({})
-    num_get = nginx.count_documents({"method": "GET"})
-    num_post = nginx.count_documents({"method": "POST"})
-    num_put = nginx.count_documents({"method": "PUT"})
-    num_patch = nginx.count_documents({"method": "PATCH"})
-    num_delete = nginx.count_documents({"method": "DELETE"})
     status_check = nginx.count_documents({"path": "/status"})
 
     print("{} logs".format(doc_num))
     print("Methods:")
-    print("\tmethod GET: {}".format(num_get))
-    print("\tmethod POST: {}".format(num_post))
-    print("\tmethod PUT: {}".format(num_put))
-    print("\tmethod PATCH: {}".format(num_patch))
-    print("\tmethod DELETE: {}".format(num_delete))
+    for item in method:
+        count = nginx.count_documents({"method": item})
+        print("\tmethod {}: {}".format(item, count))
     print("{} status check".format(status_check))
 
 
 if __name__ == "main":
-    log_stats(client.logs.nginx)
+  log_stats(client.logs.nginx)
