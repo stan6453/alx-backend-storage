@@ -1,54 +1,41 @@
 #!/usr/bin/env python3
-"""In this tasks, we will implement a get_page function
-(prototype: def get_page(url: str) -> str:). The core of
-the function is very simple. It uses the requests module
-to obtain the HTML content of a particular URL and returns it.
-
-Start in a new file named web.py and do not reuse the code
-written in exercise.py.
-
-Inside get_page track how many times a particular URL was
-accessed in the key "count:{url}" and cache the result with
-an expiration time of 10 seconds.
-
-Tip: Use http://slowwly.robertomurray.co.uk to simulate
-a slow response and test your caching."""
-
-
-import redis
+"""
+Redis as a http request rate counter
+"""
 import requests
-from functools import wraps
+import redis
+import functools
+from typing import Callable
 
-r = redis.Redis()
+redis_db = redis.Redis(host='127.0.0.1')
 
 
-def url_access_count(method):
-    """decorator for get_page function"""
-    @wraps(method)
+def count_requests(method: Callable) -> Callable:
+    """
+    A decorator function for counting how many times a request is made
+    """
+    @functools.wraps(method)
     def wrapper(url):
-        """wrapper function"""
-        key = "cached:" + url
-        cached_value = r.get(key)
-        if cached_value:
-            return cached_value.decode("utf-8")
+        """
+        count how many time a function is called and persis it in redis
+        """
+        count_key = "count:" + url
+        cache_key = url
+        redis_db.incr(count_key)
 
-            # Get new content and update cache
-        key_count = "count:" + url
-        html_content = method(url)
+        if redis_db.get(cache_key):
+            return redis_db.get(cache_key).decode("utf-8")
 
-        r.incr(key_count)
-        r.set(key, html_content, ex=10)
-        r.expire(key, 10)
-        return html_content
+        result = method(url)
+        redis_db.setex(cache_key, 10, result)
+        return result
+
     return wrapper
 
 
-@url_access_count
+@count_requests
 def get_page(url: str) -> str:
-    """obtain the HTML content of a particular"""
-    results = requests.get(url)
-    return results.text
-
-
-if __name__ == "__main__":
-    get_page('http://slowwly.robertomurray.co.uk')
+    """
+    make a get request and return the value
+    """
+    return requests.get(url).text
