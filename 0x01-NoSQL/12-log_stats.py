@@ -36,4 +36,4 @@ def log_stats(nginx):
 
 
 if __name__ == "main":
-  log_stats(client.logs.nginx)
+    log_stats(client.logs.nginx)
