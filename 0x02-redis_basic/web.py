@@ -27,7 +27,8 @@ def count_requests(method: Callable) -> Callable:
         cache_key = "cache:" + url
         if redis_db.get(cache_key) is None:
             redis_db.setex(cache_key, 10, result)
-        return result
+            return result
+        return redis_db.get(cache_key).decode('utf-8')
     return wrapper
 
 
