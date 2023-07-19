@@ -32,10 +32,10 @@ class Cache():
         """
         retrieves key-value pair in redis
         """
-        if fn:
-            return fn(self._redis.get(key))
-        data = self._redis.get(key)
-        return data
+        result = self._redis.get(key)
+        if fn is None:
+            return result
+        return fn(result)
 
     def get_int(self: bytes) -> int:
         """convert to int"""
