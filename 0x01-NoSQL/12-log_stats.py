@@ -21,7 +21,10 @@ client = MongoClient('mongodb://127.0.0.1:27017')
 
 
 def log_stats(nginx):
-
+    """
+    function that provides some stats about Nginx
+    logs stored in MongoDB:
+    """
     doc_num = nginx.count_documents({})
     num_get = nginx.count_documents({"method": "GET"})
     num_post = nginx.count_documents({"method": "POST"})
