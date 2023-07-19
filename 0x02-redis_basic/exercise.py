@@ -16,7 +16,7 @@ class Cache():
         """
         Initialize Redis db connection 
         """
-        self._redis = redis.Redis()
+        self._redis = redis.Redis(host='127.0.0.1')
         self._redis.flushdb()
 
     def store(self, data: str | bytes | int | float) -> str:
