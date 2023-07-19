@@ -3,7 +3,6 @@
 Writing strings to Redis
 """
 import functools
-import re
 import redis
 import uuid
 from typing import Callable, Any, Optional, Union
@@ -60,12 +59,13 @@ def replay(method: Callable) -> None:
     outputs = redis_db.lrange(method_name+":outputs", 0, -1)
 
     for input, output in zip(inputs, outputs):
-        print("{}(*{}) -> {}".format(method_name, input.decode('utf-8'), output.decode('utf-8')))
+        print("{}(*{}) -> {}".format(method_name, input.decode('utf-8'),
+                                     output.decode('utf-8')))
 
 
 class Cache():
     """
-    Cache class
+    Cache class. that interfaces with the redis db
     """
 
     def __init__(self) -> None:
