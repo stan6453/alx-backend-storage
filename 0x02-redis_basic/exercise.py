@@ -4,7 +4,7 @@ Writing strings to Redis
 """
 import redis
 import uuid
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Optional, Union
 
 
 class Cache():
@@ -19,7 +19,7 @@ class Cache():
         self._redis = redis.Redis(host='127.0.0.1')
         self._redis.flushdb()
 
-    def store(self, data: str | bytes | int | float) -> str:
+    def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store key-value pair in redis
         """
