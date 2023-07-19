@@ -56,26 +56,11 @@ def replay(method: Callable):
     print(method_name + " was called " +
           redis_db.get(method_name).decode("utf-8") + " times:")
 
-    all_keys = redis_db.keys()
-    args = redis_db.lrange(method_name+":inputs", 0, -1)
-    for arg in args:
-        data_key = None
-        str_arg = arg.decode("utf-8")
-        for key in all_keys:
-            key_str = key.decode('utf-8')
-            value = None
-            try:
-                value = redis_db.get(key_str).decode("utf8")
-            except Exception:
-                pass
-            find = re.findall(r'[\d]+', str_arg)
-            if value == str_arg[2:-3]:
-                data_key = key_str
+    inputs = redis_db.lrange(method_name+":inputs", 0, -1)
+    outputs = redis_db.lrange(method_name+":outputs", 0, -1)
 
-            if len(find) > 0 and str(find[0]) == value:
-                data_key = key_str
-
-        print("{}(*{}) -> {}".format(method_name, str_arg, data_key))
+    for input, output in zip(inputs, outputs):
+        print("{}(*{}) -> {}".format(method_name, input.decode('utf-8'), output.decode('utf-8')))
 
 
 class Cache():
