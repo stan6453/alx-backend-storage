@@ -57,13 +57,13 @@ class Cache():
             return None
         return fn(data) if fn else data
 
-    def get_str(self, key: str):
+    def get_str(self, key: str) -> Union[str, None]:
         """
         get a string from redis store
         """
         return self.get(key, fn=lambda d: d.decode("utf-8"))
 
-    def get_int(self, key: str):
+    def get_int(self, key: str) -> Union[int, None]:
         """
         get an int from redis store
         """
