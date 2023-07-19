@@ -2,6 +2,7 @@
 """
 Writing strings to Redis 
 """
+import sys
 import redis
 import uuid
 from typing import Callable, Any, Optional, Union
@@ -35,3 +36,11 @@ class Cache():
         if fn is None:
             return result
         return fn(result)
+
+    def get_int(self: bytes) -> int:
+        """convert to int"""
+        return int.from_bytes(self, sys.byteorder)
+
+    def get_str(self: bytes) -> str:
+        """convert to string"""
+        return self.decode("utf-8")
