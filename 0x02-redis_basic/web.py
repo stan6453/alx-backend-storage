@@ -1,33 +1,49 @@
 #!/usr/bin/env python3
-"""5. Implementing an expiring web cache and tracker"""
-
-from requests import get
+"""
+Redis as a http request rate counter
+"""
+import requests
 import redis
-from functools import wraps
+import functools
 from typing import Callable
 
+redis_db = redis.Redis(host='127.0.0.1')
 
-def track_page_count(method: Callable) -> Callable:
-    """Tracks how many times a particular
-    URL was accessed"""
 
-    @wraps(method)
+def count_requests(method: Callable) -> Callable:
+    """
+    A decorator function for counting how many times a request is made
+    """
+    @functools.wraps(method)
     def wrapper(*args, **kwargs):
-        """Inner Wrapper Function"""
-        cache = redis.Redis()
+        """
+        count how many time a function is called and persis it in redis
+        """
         url = args[0]
-        key = 'count:' + url
-        cache.incr(key)
-        page = cache.get(url)
-        if page is not None:
-            return page.decode('utf-8')
-        page = method(*args, **kwargs)
-        cache.setex(key, 10, page)
-        return page
+        count_key = "count:" + url
+        cache_key = url
+        if redis_db.get(count_key) is None:
+            redis_db.setex(count_key, 10, 1)
+        else:
+            redis_db.incr(count_key)
+
+        if redis_db.get(cache_key):
+            return redis_db.get(cache_key).decode("utf-8")
+
+        result = method(*args, **kwargs)
+        redis_db.setex(cache_key, 10, result)
+        return result
+
     return wrapper
 
 
+@count_requests
 def get_page(url: str) -> str:
-    """Obtain the HTML content of a particular
-    URL and returns it."""
-    return get(url).text
+    """
+    make a get request and return the value
+    """
+    return requests.get(url).text
+
+
+if __name__ == "__main__":
+    print(get_page('http://slowwly.robertomurray.co.uk'))
