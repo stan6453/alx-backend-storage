@@ -22,7 +22,10 @@ def count_requests(method: Callable) -> Callable:
         url = args[0]
         count_key = "count:" + url
         cache_key = url
-        redis_db.incr(count_key)
+        if redis_db.get(count_key) is None:
+            redis_db.setex(count_key, 10, 1)
+        else:
+            redis_db.incr(count_key)
 
         if redis_db.get(cache_key):
             return redis_db.get(cache_key).decode("utf-8")
@@ -43,4 +46,4 @@ def get_page(url: str) -> str:
 
 
 if __name__ == "__main__":
-    get_page('http://slowwly.robertomurray.co.uk')
+    print(get_page('http://slowwly.robertomurray.co.uk'))
