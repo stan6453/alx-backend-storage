@@ -8,19 +8,19 @@ import uuid
 from typing import Callable, Any, Optional, Union
 
 
-def count_calls(fn: Callable) -> Callable:
+def count_calls(method: Callable) -> Callable:
     """
-    A decorator function for counting how many times a fn is called
+    A decorator function for counting how many times a method is called
     """
-    key = fn.__qualname__
+    key = method.__qualname__
 
-    @functools.wraps(fn)
+    @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         """
         count how many time a function is called and persis it in redis
         """
         self._redis.incr(key)
-        return fn(self, *args, **kwargs)
+        return method(self, *args, **kwargs)
     return wrapper
 
 
