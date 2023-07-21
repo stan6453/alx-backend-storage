@@ -22,14 +22,17 @@ def count_requests(method: Callable) -> Callable:
         url = args[0]
         count_key = "count:" + url
         cache_key = url
+        if redis_db.get(count_key) is None:
+            # redis_db.setex(count_key, 10, 1)
+            redis_db.set(count_key, 1)
+        else:
+            redis_db.incr(count_key)
 
-        redis_db.incr(count_key)
-
-        # if redis_db.get(cache_key):
-        #     return redis_db.get(cache_key).decode("utf-8")
+        if redis_db.get(cache_key):
+            return redis_db.get(cache_key).decode("utf-8")
 
         result = method(*args, **kwargs)
-        redis_db.setex(cache_key, 9, result)
+        redis_db.setex(cache_key, 10, result)
         return result
 
     return wrapper
