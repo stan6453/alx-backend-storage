@@ -37,7 +37,7 @@ def log_stats(nginx):
             "$group": {"_id": "$ip", "count": {"$sum": 1}}
         },
         {
-            "$sort": {"count": -1}
+            "$sort": {"count": -1, "ip": -1}
         },
         {
             "$limit": 10
