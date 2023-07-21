@@ -46,7 +46,7 @@ def log_stats(nginx):
 
     print("IPs:")
     for line in most_present_ips:
-      print("\t{}: {}".format(line.get("_id"), line.get("count")))
+        print("\t{}: {}".format(line.get("_id"), line.get("count")))
 
 
 if __name__ == "__main__":
