@@ -22,7 +22,7 @@ def count_requests(method: Callable) -> Callable:
         url = args[0]
         count_key = "count:" + url
         cache_key = url
-        
+
         redis_db.incr(count_key)
 
         # if redis_db.get(cache_key):
