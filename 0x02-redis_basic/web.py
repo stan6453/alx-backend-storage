@@ -29,7 +29,7 @@ def count_requests(method: Callable) -> Callable:
         #     return redis_db.get(cache_key).decode("utf-8")
 
         result = method(*args, **kwargs)
-        redis_db.setex(cache_key, 10, result)
+        redis_db.setex(cache_key, 9, result)
         return result
 
     return wrapper
