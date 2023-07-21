@@ -31,8 +31,3 @@ def log_stats(nginx):
         count = nginx.count_documents({"method": item})
         print("\tmethod {}: {}".format(item, count))
     print("{} status check".format(status_check))
-
-
-if __name__ == "__main__":
-    client = MongoClient('mongodb://127.0.0.1:27017')
-    log_stats(client.logs.nginx)
