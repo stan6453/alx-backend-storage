@@ -27,8 +27,8 @@ def count_requests(method: Callable) -> Callable:
         else:
             redis_db.incr(count_key)
 
-        if redis_db.get(cache_key):
-            return redis_db.get(cache_key).decode("utf-8")
+        # if redis_db.get(cache_key):
+        #     return redis_db.get(cache_key).decode("utf-8")
 
         result = method(*args, **kwargs)
         redis_db.setex(cache_key, 10, result)
